@@ -36,6 +36,9 @@ const Project = () => {
     const [webContainer, setWebContainer] = useState(null);
     const [iframeUrl, setIframeUrl] = useState(null);
     const [runProcess, setRunProcess] = useState(null);
+    const scrollToBottom = () => {
+        messageBox.current.scrollTop = messageBox.current.scrollHeight;
+    };
 
     const handleUserClick = (id) => {
         setSelectedUserId((prevSelectedUserId) => {
@@ -132,10 +135,7 @@ const Project = () => {
         });
     };
 
-    const scrollToBottom = () => {
-        messageBox.current.scrollTop = messageBox.current.scrollHeight;
-    };
-
+  
     return (
         <main className='h-screen w-screen flex bg-gray-900 text-white'>
             <section className="left relative flex flex-col h-screen min-w-96 bg-gray-800 shadow-lg">
