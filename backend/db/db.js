@@ -11,3 +11,4 @@ function connect() {
       .catch((error) => console.error('MongoDB connection error:', error));
     
 }
+export default connect;
