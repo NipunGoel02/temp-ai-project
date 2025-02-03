@@ -17,6 +17,8 @@ body {
 
 .message-box {
   transition: background-color 0.3s ease; /* Smooth transition for message box */
+  overflow-y: auto; /* Allow vertical scrolling */
+  max-height: 80vh; /* Set a maximum height for the message box */
 }
 
 .message-box:hover {
