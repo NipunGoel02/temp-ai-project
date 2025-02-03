@@ -4,7 +4,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import axios from '../config/axios';
 import { initializeSocket, receiveMessage, sendMessage } from '../config/socket';
 import Markdown from 'markdown-to-jsx';
-import hljs from 'highlight.js';
 import { getWebContainer } from '../config/webContainer';
 
 function SyntaxHighlightedCode(props) {
