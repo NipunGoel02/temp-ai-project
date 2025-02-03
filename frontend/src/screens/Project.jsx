@@ -162,6 +162,12 @@ const Project = () => {
                         <input
                             value={message}
                             onChange={(e) => setMessage(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault(); // Prevents the default action (new line)
+                                    send(); // Calls the send function
+                                }
+                            }}
                             className='p-2 px-4 border-none outline-none flex-grow bg-gray-600 text-white rounded-lg placeholder-gray-400'
                             type="text"
                             placeholder='Enter message'
@@ -309,7 +315,7 @@ const Project = () => {
                                     </div>
                                     <h1 className='font-semibold text-lg'>{user.email}</h1>
                                 </div>
-                            ))}
+                            ))} 
                         </div>
                         <button
                             onClick={addCollaborators}
