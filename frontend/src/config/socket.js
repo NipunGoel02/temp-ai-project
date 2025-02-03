@@ -3,7 +3,7 @@ import socket from 'socket.io-client';
 let socketInstance = null;
 
 export const initializeSocket = (projectId) => {
-    socketInstance = socket("http://localhost:3000", {
+    socketInstance = socket("https://ai-project-backend-u23l.onrender.com", {
         auth: {
             token: localStorage.getItem('token')
         },
