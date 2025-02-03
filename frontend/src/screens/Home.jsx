@@ -1,76 +1,82 @@
-import React, { useContext, useState, useEffect } from 'react'
-import { UserContext } from '../context/user.context'
-import axios from "../config/axios"
-import { useNavigate } from 'react-router-dom'
+import React, { useContext, useState, useEffect } from 'react';
+import { UserContext } from '../context/user.context';
+import axios from "../config/axios";
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion'; // Import Framer Motion for animations
 
 const Home = () => {
-
-    const { user } = useContext(UserContext)
-    const [ isModalOpen, setIsModalOpen ] = useState(false)
-    const [ projectName, setProjectName ] = useState(null)
-    const [ project, setProject ] = useState([])
-
-    const navigate = useNavigate()
+    const { user } = useContext(UserContext);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [projectName, setProjectName] = useState(null);
+    const [project, setProject] = useState([]);
+    const navigate = useNavigate();
 
     function createProject(e) {
-        e.preventDefault()
-        console.log({ projectName })
+        e.preventDefault();
+        console.log({ projectName });
 
         axios.post('/projects/create', {
             name: projectName,
         })
             .then((res) => {
-                console.log(res)
-                setIsModalOpen(false)
+                console.log(res);
+                setIsModalOpen(false);
             })
             .catch((error) => {
-                console.log(error)
-            })
+                console.log(error);
+            });
     }
 
     useEffect(() => {
         axios.get('/projects/all').then((res) => {
-            setProject(res.data.projects)
-
+            setProject(res.data.projects);
         }).catch(err => {
-            console.log(err)
-        })
-
-    }, [])
+            console.log(err);
+        });
+    }, []);
 
     return (
-        <main className='p-4'>
+        <motion.main 
+            className='p-4 bg-gradient-to-r from-purple-400 to-blue-500 min-h-screen' 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            transition={{ duration: 0.5 }}
+        >
             <div className="projects flex flex-wrap gap-3">
-                <button
+                <motion.button
                     onClick={() => setIsModalOpen(true)}
-                    className="project p-4 border border-slate-300 rounded-md">
+                    className="project p-4 border border-slate-300 rounded-md bg-white shadow-lg transition-transform transform hover:scale-105"
+                    whileHover={{ scale: 1.05 }}
+                >
                     New Project
                     <i className="ri-link ml-2"></i>
-                </button>
+                </motion.button>
 
-                {
+                {project.length > 0 ? (
                     project.map((project) => (
-                        <div key={project._id}
+                        <motion.div 
+                            key={project._id}
                             onClick={() => {
                                 navigate(`/project`, {
                                     state: { project }
-                                })
+                                });
                             }}
-                            className="project flex flex-col gap-2 cursor-pointer p-4 border border-slate-300 rounded-md min-w-52 hover:bg-slate-200">
-                            <h2
-                                className='font-semibold'
-                            >{project.name}</h2>
-
+                            className="project flex flex-col gap-2 cursor-pointer p-4 border border-slate-300 rounded-md min-w-52 bg-white shadow-lg transition-transform transform hover:scale-105"
+                            whileHover={{ scale: 1.05 }}
+                        >
+                            <h2 className='font-semibold'>{project.name}</h2>
                             <div className="flex gap-2">
-                                <p> <small> <i className="ri-user-line"></i> Collaborators</small> :</p>
+                                <p><small><i className="ri-user-line"></i> Collaborators</small> :</p>
                                 {project.users.length}
                             </div>
-
-                        </div>
+                        </motion.div>
                     ))
-                }
-
-
+                ) : (
+                    <div className="flex flex-col items-center justify-center w-full h-64 bg-white rounded-md shadow-lg">
+                        <h2 className="text-lg font-semibold">No Projects Available</h2>
+                        <p className="text-gray-500">Start by creating a new project!</p>
+                    </div>
+                )}
             </div>
 
             {isModalOpen && (
@@ -93,10 +99,8 @@ const Home = () => {
                     </div>
                 </div>
             )}
-
-
-        </main>
-    )
+        </motion.main>
+    );
 }
 
-export default Home
+export default Home;

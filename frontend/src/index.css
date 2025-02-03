@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 * {
-  margin: 0%;
-  padding: 0%;
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
 }
 
@@ -12,11 +12,43 @@ html,
 body {
   height: 100%;
   width: 100%;
+  font-family: 'Arial', sans-serif; /* Updated font for modern look */
 }
 
-.message-box{
-  scroll-behavior: smooth;
+.message-box {
+  transition: background-color 0.3s ease; /* Smooth transition for message box */
 }
-.message-box::-webkit-scrollbar{
-  display: none;
+
+.message-box:hover {
+  background-color: rgba(255, 255, 255, 0.1); /* Light hover effect */
 }
+
+.user {
+  transition: background-color 0.3s ease; /* Smooth transition for user hover */
+}
+
+.user:hover {
+  background-color: rgba(0, 0, 0, 0.1); /* Light hover effect for users */
+}
+
+.sidePanel {
+  transition: transform 0.3s ease; /* Smooth transition for side panel */
+}
+
+.inputField input {
+  transition: border 0.3s ease; /* Smooth transition for input field */
+}
+
+.inputField input:focus {
+  border: 2px solid #4A90E2; /* Focus effect for input field */
+}
+
+.code-editor-area {
+  transition: background-color 0.3s ease; /* Smooth transition for code editor */
+}
+
+.code-editor-area:hover {
+  background-color: rgba(240, 240, 240, 0.5); /* Light hover effect for code editor */
+}
+
+/* Add any additional styles or animations as needed */
