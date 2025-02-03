@@ -106,6 +106,7 @@ const Project = () => {
             } else {
                 setMessages(prevMessages => [...prevMessages, data]);
             }
+            scrollToBottom(); // Call to scroll to the bottom when a new message is received
         });
 
         axios.get(`/projects/get-project/${location.state.project._id}`).then(res => {
