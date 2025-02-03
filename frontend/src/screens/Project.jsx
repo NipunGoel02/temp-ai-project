@@ -135,10 +135,9 @@ const Project = () => {
         });
     };
 
-  
     return (
-        <main className='h-screen w-screen flex bg-gray-900 text-white'>
-            <section className="left relative flex flex-col h-screen min-w-96 bg-gray-800 shadow-lg">
+        <main className='h-screen w-screen flex flex-wrap bg-gray-900 text-white'>
+            <section className="left relative flex flex-col h-screen min-w-96 bg-gray-800 shadow-lg flex-1">
                 <header className='flex justify-between items-center p-4 w-full bg-gray-700 absolute z-10 top-0 shadow-md'>
                     <button className='flex gap-2 items-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-all duration-300' onClick={() => setIsModalOpen(true)}>
                         <i className="ri-add-fill"></i>
@@ -197,8 +196,8 @@ const Project = () => {
                     </div>
                 </div>
             </section>
-            <section className="right bg-gray-900 flex-grow h-full flex">
-                <div className="explorer h-full max-w-64 min-w-52 bg-gray-800 shadow-lg">
+            <section className="right bg-gray-900 flex-grow h-full flex flex-wrap">
+                <div className="explorer h-full max-w-64 min-w-52 bg-gray-800 shadow-lg flex-1">
                     <div className="file-tree w-full">
                         {Object.keys(fileTree).map((file, index) => (
                             <button
