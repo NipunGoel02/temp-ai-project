@@ -4,7 +4,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import axios from '../config/axios';
 import { initializeSocket, receiveMessage, sendMessage } from '../config/socket';
 import Markdown from 'markdown-to-jsx';
-
 import { getWebContainer } from '../config/webContainer';
 
 function SyntaxHighlightedCode(props) {
@@ -30,10 +29,7 @@ const Project = () => {
     const { user } = useContext(UserContext);
     const messageBox = useRef(null);
     const [users, setUsers] = useState([]);
-    const [messages, setMessages] = useState(() => {
-        const savedMessages = localStorage.getItem(`chatMessages_${project._id}`);
-        return savedMessages ? JSON.parse(savedMessages) : [];
-    });
+    const [messages, setMessages] = useState([]);
     const [fileTree, setFileTree] = useState({});
     const [currentFile, setCurrentFile] = useState(null);
     const [openFiles, setOpenFiles] = useState([]);
@@ -43,6 +39,7 @@ const Project = () => {
     const scrollToBottom = () => {
         messageBox.current.scrollTop = messageBox.current.scrollHeight;
     };
+
     const handleUserClick = (id) => {
         setSelectedUserId((prevSelectedUserId) => {
             const newSelectedUserId = new Set(prevSelectedUserId);
@@ -72,9 +69,7 @@ const Project = () => {
             message,
             sender: user
         });
-        const newMessage = { sender: user, message };
-        setMessages(prevMessages => [...prevMessages, newMessage]);
-        localStorage.setItem(`chatMessages_${project._id}`, JSON.stringify([...messages, newMessage]));
+        setMessages(prevMessages => [...prevMessages, { sender: user, message }]);
         setMessage("");
     };
 
@@ -110,18 +105,11 @@ const Project = () => {
                 if (message.fileTree) {
                     setFileTree(message.fileTree || {});
                 }
-                setMessages(prevMessages => {
-                    const updatedMessages = [...prevMessages, data];
-                    localStorage.setItem(`chatMessages_${project._id}`, JSON.stringify(updatedMessages));
-                    return updatedMessages;
-                });
+                setMessages(prevMessages => [...prevMessages, data]);
             } else {
-                setMessages(prevMessages => {
-                    const updatedMessages = [...prevMessages, data];
-                    localStorage.setItem(`chatMessages_${project._id}`, JSON.stringify(updatedMessages));
-                    return updatedMessages;
-                });
+                setMessages(prevMessages => [...prevMessages, data]);
             }
+            scrollToBottom(); // Call to scroll to the bottom when a new message is received
         });
 
         axios.get(`/projects/get-project/${location.state.project._id}`).then(res => {
@@ -135,10 +123,7 @@ const Project = () => {
             console.log(err);
         });
     }, []);
-    useEffect(() => {
-        // This will scroll to the bottom whenever the messages change
-        scrollToBottom();
-    }, [messages]);
+
     const saveFileTree = (ft) => {
         axios.put('/projects/update-file-tree', {
             projectId: project._id,
@@ -150,45 +135,48 @@ const Project = () => {
         });
     };
 
-  
-
     return (
-      <main className='h-screen w-screen flex bg-gradient-to-br from-yellow-300 via-pink-300 to-purple-400 text-black'>
-      <section className="left relative flex flex-col h-screen min-w-96 bg-gradient-to-t from-purple-400 via-pink-300 to-yellow-300 shadow-xl">
-          <header className='flex justify-between items-center p-4 w-full bg-gradient-to-r from-purple-500 to-pink-400 absolute z-10 top-0 shadow-md'>
-              <button className='flex gap-2 items-center bg-gradient-to-br from-pink-500 to-yellow-400 hover:from-yellow-400 hover:to-purple-500 text-white px-4 py-2 rounded-lg transition-all duration-300'>
-                  <i className="ri-add-fill"></i>
-                  <p>Add collaborator</p>
-              </button>
-              <button onClick={() => setIsSidePanelOpen(!isSidePanelOpen)} className='p-2 bg-gradient-to-bl from-pink-500 to-yellow-400 hover:bg-purple-600 rounded-lg transition-all duration-300'>
-                  <i className="ri-group-fill"></i>
-              </button>
-          </header>
-          <div className="conversation-area pt-16 pb-12 flex-grow flex flex-col h-full relative">
-              <div ref={messageBox} className="message-box p-2 flex-grow flex flex-col gap-2 overflow-auto max-h-full scrollbar-hide bg-gradient-to-tl from-pink-200 to-purple-200 shadow-inner rounded-lg">
-                  {messages.map((msg, index) => (
-                      <div key={index} className={`${msg.sender._id === 'ai' ? 'max-w-80' : 'max-w-52'} ${msg.sender._id === user._id.toString() && 'ml-auto'} message flex flex-col p-3 bg-gradient-to-r from-yellow-300 via-purple-200 to-pink-300 w-fit rounded-lg shadow-md`}>
-                          <small className='opacity-65 text-xs'>{msg.sender.email}</small>
-                          <div className='text-sm'>
-                              {msg.sender._id === 'ai' ? WriteAiMessage(msg.message) : <p>{msg.message}</p>}
-                          </div>
-                      </div>
-                  ))}
-              </div>
-              <div className="inputField w-full flex absolute bottom-0 bg-gradient-to-br from-purple-300 to-yellow-300 p-2 shadow-lg">
-                  <input
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
-                      className='p-2 px-4 border-none outline-none flex-grow bg-white text-black rounded-lg placeholder-gray-600'
-                      type="text"
-                      placeholder='Enter message'
-                  />
-                  <button onClick={send} className='px-5 bg-gradient-to-r from-yellow-400 to-purple-500 hover:bg-pink-500 text-white rounded-lg transition-all duration-300'>
-                      <i className="ri-send-plane-fill"></i>
-                  </button>
-              </div>
-          </div>
-  
+        <main className='h-screen w-screen flex flex-wrap bg-gray-900 text-white'>
+            <section className="left relative flex flex-col h-screen min-w-96 bg-gray-800 shadow-lg flex-1">
+                <header className='flex justify-between items-center p-4 w-full bg-gray-700 absolute z-10 top-0 shadow-md'>
+                    <button className='flex gap-2 items-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-all duration-300' onClick={() => setIsModalOpen(true)}>
+                        <i className="ri-add-fill"></i>
+                        <p>Add collaborator</p>
+                    </button>
+                    <button onClick={() => setIsSidePanelOpen(!isSidePanelOpen)} className='p-2 bg-gray-600 hover:bg-gray-700 rounded-lg transition-all duration-300'>
+                        <i className="ri-group-fill"></i>
+                    </button>
+                </header>
+                <div className="conversation-area pt-16 pb-12 flex-grow flex flex-col h-full relative">
+                    <div ref={messageBox} className="message-box p-2 flex-grow flex flex-col gap-2 overflow-auto max-h-full scrollbar-hide">
+                        {messages.map((msg, index) => (
+                            <div key={index} className={`${msg.sender._id === 'ai' ? 'max-w-80' : 'max-w-52'} ${msg.sender._id === user._id.toString() && 'ml-auto'} message flex flex-col p-3 bg-gray-700 w-fit rounded-lg shadow-md transition-all duration-300`}>
+                                <small className='opacity-65 text-xs'>{msg.sender.email}</small>
+                                <div className='text-sm'>
+                                    {msg.sender._id === 'ai' ? WriteAiMessage(msg.message) : <p>{msg.message}</p>}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="inputField w-full flex absolute bottom-0 bg-gray-700 p-2 shadow-lg">
+                        <input
+                            value={message}
+                            onChange={(e) => setMessage(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault(); // Prevents the default action (new line)
+                                    send(); // Calls the send function
+                                }
+                            }}
+                            className='p-2 px-4 border-none outline-none flex-grow bg-gray-600 text-white rounded-lg placeholder-gray-400'
+                            type="text"
+                            placeholder='Enter message'
+                        />
+                        <button onClick={send} className='px-5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-300'>
+                            <i className="ri-send-plane-fill"></i>
+                        </button>
+                    </div>
+                </div>
                 <div className={`sidePanel w-full h-full flex flex-col gap-2 bg-gray-700 absolute transition-all duration-300 ${isSidePanelOpen ? 'translate-x-0' : '-translate-x-full'} top-0 shadow-lg`}>
                     <header className='flex justify-between items-center px-4 p-2 bg-gray-600'>
                         <h1 className='font-semibold text-lg'>Collaborators</h1>
@@ -208,8 +196,8 @@ const Project = () => {
                     </div>
                 </div>
             </section>
-            <section className="right bg-gray-900 flex-grow h-full flex">
-                <div className="explorer h-full max-w-64 min-w-52 bg-gray-800 shadow-lg">
+            <section className="right bg-gray-900 flex-grow h-full flex flex-wrap">
+                <div className="explorer h-full max-w-64 min-w-52 bg-gray-800 shadow-lg flex-1">
                     <div className="file-tree w-full">
                         {Object.keys(fileTree).map((file, index) => (
                             <button
@@ -327,7 +315,7 @@ const Project = () => {
                                     </div>
                                     <h1 className='font-semibold text-lg'>{user.email}</h1>
                                 </div>
-                            ))}
+                            ))} 
                         </div>
                         <button
                             onClick={addCollaborators}
